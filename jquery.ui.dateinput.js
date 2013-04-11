@@ -2,7 +2,7 @@
  * DateInput jquery.ui plugin 
  *  - Date entry with validation, and optional popup datepicker UI. 
  *  - Popup datepicker UI provided by jquery.ui.datepicker.js plugin.
- *  - User input validated by regular expression, then by sugarjs.
+ *  - User input validated by regular expression.
  *
  * Author:      @marklarter - Mark Larter
  *
@@ -11,9 +11,8 @@
  * License:     MIT, GPL2
  * 
  * Depends:     jquery.core.js     
- *              jquery.ui.core.js,
+ *              jquery.ui.core.js
  *              jquery.ui.datepicker.js
- *              sugar.js - http://sugarjs.com
  *
  * Notes:       Follows pattern guidance from "Essential jQuery Plugin Patterns" by Addy Osmani (et al),
  *              especially "Namespacing and Nested Namespacing" and "jQuery UI Widget Factory Bridge", at
@@ -25,12 +24,17 @@
 ;(function($, window, document, undefined) {
 	var pluginName = "dateInput",
         defaults = {
-            "showError": true,
-            "errorClass": "errorInput",
-            "hasPicker": true,
-            "hasButtons": false
-            "isRequired": false
-        },
+            showMessage: true,
+            errorClass: "errorInput",
+            dateDelimiter: "/",
+            hasPicker: true,
+            hasButtons: false,
+            isDateRequired: false,
+            hasTime: false,
+            isTimeRequired: false,
+            hasSeconds: false,
+            onComplete: null
+       },
 		//dateRegex = /^((([0]?[1-9]|1[0-2])(:|\.)[0-5][0-9]((:|\.)[0-5][0-9])?( )?(AM|am|aM|Am|PM|pm|pM|Pm))|(([0]?[0-9]|1[0-9]|2[0-3])(:|\.)[0-5][0-9]((:|\.)[0-5][0-9])?))$/;
 		dateRegex = /^[\s\S]*$/;
     
@@ -49,43 +53,46 @@
 
         this._dateDisplayFormat = isMsAjax ? "yyyy/MM/dd" : "{yyyy}/{MM}/{dd}";
         this._fullDisplayFormat = isMsAjax ? "W MMM dd, yyyy" : "{Weekday} {Month} {ord}, {year}";
+        
 		this._dateRegex = dateRegex;
     
-		this._dateValue = {
-			isValid: false,
-			message: null,
-			date: null
-		};
-			
         this._init();
     }
     
     dateInput.prototype = {
         _create: function() {
+            var self = this;
         },
         
-		_init: function() {
+        _init: function() {
+            this._clearDate();
+            var self = this, $element = $(this.element);
             var options = this.options;
-			if (options.hasPicker) {
-				var hasButtons = options.hasButtons;
-				$(this.element).datepicker({
-					showCloseButton: hasButtons,
-					showNowButton: hasButtons,
-					showDeselectButton: hasButtons && !options.isRequired,
-					onClose: function (date, inst) {
-						$(this).dateInput("setDate", date);
-					}
-				});
-			}
-			else {
-				$(this.element).on('blur', function(event) {
-					$(this).dateInput("setDate", $(this).val());
-				});
-			}
-           
-            var initialValue = $(this.element).val();
+            var onComplete = options.onComplete;
+            if (options.hasPicker) {
+                var hasButtons = options.hasButtons;
+                $element.datepicker({
+                    showCloseButton: hasButtons,
+                    showNowButton: hasButtons,
+                    showDeselectButton: hasButtons && !options.isRequired,
+                    onClose: function (date, inst) {
+                        var jqInst = $(this);
+                        jqInst.dateInput("setDate", date);
+                        if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
+                    }
+                });
+            }
+            else {
+                $element.on('blur', function(event) {
+                    var jqInst = $(this);
+                    jqInst.dateInput("setDate", jqInst.val());
+                    if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
+                });
+            }
+            
+            var initialValue = $element.val();
             if (initialValue && initialValue !== "") { this.setDate(initialValue); }
-		},
+        },
     
 		option: function(key, value) {
             if ($.isPlainObject(key)) {
@@ -100,14 +107,52 @@
             
             return this;
 		},
-		
-		_validateDate: function(dateString) {
-			var dateValue = {
-				isValid: false,
-				message: null,
-				date: null
-			};
-            
+
+        _clearDate: function() {
+            this._dateValue = {
+                isValid: false,
+                message: null,
+                date: null,
+                timeValue: null
+            };
+        },
+
+        _showFeedback: function(dateValue) {
+            var $element = $(this.element);
+            if ($element && dateValue) {
+                var options = this.options;
+                if (dateValue.isValid) {
+                    $element.removeClass("errorInput");
+                    if (options.showMessage) { $element.attr('title', ""); }
+                }
+                else {
+                    $element.addClass("errorInput");
+                    if (options.showMessage) { $element.attr('title', dateValue.message); }
+                }
+            }
+        },
+
+        _formatValidDate: function(dateValue) {
+            // Check for valid date.
+            if (dateValue && dateValue.isValid) {
+                // Format date. Zero pad months and days. Concatenate date parts with delimiter.
+                var dateDelimiter = this.options.dateDelimiter;
+                if (dateValue.hours.length == 1) { dateValue.hours = "0" + dateValue.hours; }
+                timeValue.time = timeValue.hours + dateDelimiter + timeValue.minutes
+                if (timeValue.seconds) { timeValue.time = timeValue.time + dateDelimiter + timeValue.seconds; }
+                timeValue.message = timeValue.time;
+            }
+        },
+
+        _validateDate: function(dateString) {
+            var dateValue = {
+                isValid: false,
+                message: null,
+                dateInput: null,
+                date: null,
+                timeValue: null
+            };
+
             var options = this.options;
             if (options.isRequired && (dateString == null || dateString === "")) {
                 dateValue.message = "Date is required";
@@ -117,56 +162,69 @@
                 dateValue.message = "Date is empty";                   
             }
             else {
-                var matches = dateString.match(this._dateRegex);                        
-                if (matches) {
-                    dateValue.isValid = true;
-                    var dateInput = Date.create(dateString);
-                    dateValue.date = dateInput;
-                    dateValue.message = dateInput.format(this._fullDisplayFormat);
+                // Now do actual date validation.
+                if (typeof dateString !== "string") {
+                    dateString = dateString.toString();
                 }
-                else {
-                    dateValue.message = "Date is invalid";                   
+
+                if (isNaN(new Date(dateString))) {
+                    dateValue.message = "Date is invalid";
+                }
+                else { 
+                    dateValue.isValid = true;
+                    dateValue.message = "Invalid date.";
                 }
             }
 
-            if (options.showError) {
-                var elInput = $(this.element);
-                if (dateValue.isValid) {
-                    elInput.removeClass(options.errorClass);
-                    elInput.attr('title', "");
-                }
-                else {
-                    elInput.addClass(options.errorClass);
-                    elInput.attr('title', dateValue.message);
-                }
-            }
-				
-			return dateValue;       
-		},
+            // Show feedback.
+            this._showFeedback(dateValue);
+
+            return dateValue;
+        },
 
         setDate: function(dateToSet) {
-			this._dateValue = this._validateDate(dateToSet);
+            this._dateValue = this._validateDate(dateToSet);
 
             var hasPicker = this.options.hasPicker;
-			if (dateToSet === "") {
-				if (hasPicker) { $(this.element).datepicker('setDate', dateToSet); }
-				else { $(this.element).val(""); }
-			}
-			else {
+            var $element = $(this.element);
+            if (dateToSet == null || dateToSet === "") {
+                if (hasPicker) { $element.datepicker('setDate', ""); }
+                else { $element.val(""); }
+            }
+            else {
                 var dateValue = this._dateValue;
-				if (dateValue.isValid) {
-                    var formattedDate = dateValue.date.format(this._dateDisplayFormat);
-					if (hasPicker) { $(this.element).datepicker('setDate', formattedDate); }
-					else { $(this.element).val(formattedTime); }
-				}
-			}
-            
+                if (dateValue.isValid) {
+                    var formattedDate = dateValue.date;
+                    if (hasPicker) { $element.datepicker('setDate', formattedDate); }
+                    else { $element.val(formattedDate); }
+                }
+            }
+           
             return this;
+        },
+
+        clearDate: function() {
+            this._clearDate();
         },
         
         getDateValue: function() {
             return this._dateValue;
+        },
+
+        setEnabled: function(isEnabled) {
+            var hasTime = this.options.hasTime;
+            if (isEnabled) {
+                $(this.txtDate).removeAttr("disabled");
+                if (hasTime)
+                    $(_timeObject).removeAttr("disabled");
+            }
+            else {
+                $(this.txtDate).attr("disabled", "disabled");
+                if (hasTime)
+                    $(_timeObject).attr("disabled", "disabled");
+            }
         }
+    };
     };
 
 	// Hook up to widget bridge.
