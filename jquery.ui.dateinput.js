@@ -170,13 +170,14 @@
                     dateString = dateString.toString();
                 }
 
-				dateValue.date = new Date(dateString);
-                if (isNaN(dateValue.date)) {
+				var newDate = new Date(dateString);
+				dateValue.date = newDate;
+                if (isNaN(newDate)) {
                     dateValue.message = "Date is invalid";
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = $.datepicker.formatDate(this._dateDisplayFormat);
+                    dateValue.message = $.datepicker.formatDate(newDate, this._fullDisplayFormat);
                 }
             }
 
@@ -198,9 +199,8 @@
             else {
                 var dateValue = this._dateValue;
                 if (dateValue.isValid) {
-                    var formattedDate = dateValue.date;
-                    if (hasPicker) { $element.datepicker('setDate', formattedDate); }
-                    else { $element.val(formattedDate); }
+                    if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
+                    else { $element.val($.datepicker.formatDate(dateValue.date, this._dateDisplayFormat)); }
                 }
             }
            
