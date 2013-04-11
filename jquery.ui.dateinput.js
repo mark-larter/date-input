@@ -170,12 +170,13 @@
                     dateString = dateString.toString();
                 }
 
-                if (isNaN(new Date(dateString))) {
+				dateValue.date = new Date(dateString);
+                if (isNaN(dateValue.date)) {
                     dateValue.message = "Date is invalid";
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = "Invalid date.";
+                    dateValue.message = $(this.element).datepicker.formatDate(this._dateDisplayFormat);
                 }
             }
 
