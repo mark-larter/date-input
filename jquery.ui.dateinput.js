@@ -176,7 +176,7 @@
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = datepicker.formatDate(this._dateDisplayFormat);
+                    dateValue.message = $.datepicker.formatDate(this._dateDisplayFormat);
                 }
             }
 
