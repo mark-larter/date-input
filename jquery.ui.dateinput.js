@@ -176,7 +176,7 @@
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = $(this.element).datepicker.formatDate(this._dateDisplayFormat);
+                    dateValue.message = datepicker.formatDate(this._dateDisplayFormat);
                 }
             }
 
@@ -214,7 +214,6 @@
         getDateValue: function() {
             return this._dateValue;
         },
-		
 		
 		addDays: function(days) {
 			var intDays = parseInt(days, 10);
