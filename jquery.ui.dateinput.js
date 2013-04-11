@@ -72,6 +72,9 @@
             if (options.hasPicker) {
                 var hasButtons = options.hasButtons;
                 $element.datepicker({
+					changeMonth: true,
+					changeYear: true,
+					dateFormat: "mm/dd/yy",
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
                     showDeselectButton: hasButtons && !options.isRequired,
@@ -210,6 +213,17 @@
         getDateValue: function() {
             return this._dateValue;
         },
+		
+		
+		addDays: function(days) {
+			var intDays = parseInt(days, 10);
+			if (intDays != NaN) {
+				var adjustment = days + "d";
+				if (intDays > 0) { adjustment = "+" + adjustment; }
+				adjustment = "c" + adjustment;
+				this.txtDate.datepicker("setDate", adjustment);
+			}
+		},
 
         setEnabled: function(isEnabled) {
             var hasTime = this.options.hasTime;
@@ -225,91 +239,7 @@
             }
         }
     };
-    };
 
 	// Hook up to widget bridge.
 	$.widget.bridge("dateInput", dateInput);
 })(jQuery, window, document);
-    
-    
-    
-function DateTimeControlObject(dateControlID, timeControlId, minYear, allowBlankDate, isEndDate) {
-    this.AllowBlankDate = allowBlankDate;
-    this.IsEndDate = isEndDate;
-    this.ChkIsValid = $("#" + dateControlID + "_isvalid");
-
-    intYear = parseInt(minYear, 10);
-    if (intYear == NaN) { minYear = "1930"; }
-    else {
-        if (intYear < 1930) { minYear = "1930"; }
-        else if (intYear > 2025) { minYear = "2025"; }
-    }
-
-    this.txtDate = $("#" + dateControlID);
-    var currentSetDate = new Date(this.txtDate.val());
-    this.txtDate.datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "mm/dd/yy",
-        yearRange: minYear + ":2025",
-        onClose: function (dateString, inst) {
-            _validateDate(dateString);
-        },
-        onSelect: function (dateString, inst) {
-            var newDateTime = new Date(dateString);
-            $(inst).datepicker("setDate", newDateTime);
-        }
-    });
-
-    if (!(isNaN(currentSetDate))) {
-        this.txtDate.datepicker("setDate", currentSetDate);
-    }
-
-    this.SetDate = function (expression) {
-        var dateValue = new Date(expression);
-        this.txtDate.datepicker("setDate", dateValue);
-    }
-
-    this.GetDate = function () {
-        return new Date(this.txtDate.val());
-    }
-
-    this.val = function () {
-        if (arguments.length == 1) {
-            this.SetDate(dateValue);
-        } 
-        else {
-            this.GetDate();
-        }
-    }
-
-    this.AddDays = function (days) {
-        var intDays = parseInt(days, 10);
-        if (intDays != NaN) {
-            var adjustment = days + "d";
-            if (intDays > 0) {
-                adjustment = "+" + adjustment;
-            }
-            adjustment = "c" + adjustment;
-            this.txtDate.datepicker("setDate", adjustment);
-        }
-    }
-
-    this.GetIsValid = _validateDate;
-
-    this.SetEnabled = function (isEnabled) {
-        if (isEnabled) {
-            $(this.txtDate).removeAttr("disabled");
-        }
-        else {
-            $(this.txtDate).attr("disabled", "disabled");
-        }
-    }
-
-    this.GetEnabled = function () {
-        if ($(this.txtDate).attr("disabled"))
-            return false;
-        else
-            return true;
-    }
-}
