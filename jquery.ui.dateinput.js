@@ -149,11 +149,7 @@
             }
             else {
                 // Now do actual date validation.
-                if (typeof dateString !== "string") {
-                    dateString = dateString.toString();
-                }
-
-				 = new Date();
+                if (typeof dateString !== "string") { dateString = dateString.toString(); }
 				this._setDate(newDate);
             }
 
