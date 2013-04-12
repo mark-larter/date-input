@@ -172,6 +172,7 @@
 
         setDate: function(dateToSet) {
             this._dateValue = this._validateDate(dateToSet);
+            var dateValue = this._dateValue;
 
             var options = this.options;
             var hasPicker = options.hasPicker;
@@ -181,7 +182,6 @@
                 else { $element.val(""); }
             }
             else {
-                var dateValue = this._dateValue;
                 if (dateValue.isValid) {
                     if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
                     else { $element.val($.datepicker.formatDate(options.dateDisplayFormat, dateValue.date)); }
@@ -189,7 +189,11 @@
             }
 			
 			// Leverage datepicker smarts.
-			if (hasPicker) { this._dateValue.date = $element.datepicker('getDate'); }
+			if (hasPicker) { 
+				dateValue.date = $element.datepicker('getDate'); 
+                dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
+                dateValue.isValid = !isNaN(dateValue.date);
+			}
            
             return this;
         },
