@@ -163,7 +163,7 @@
 			if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
 			else { 
 				dateValue.isValid = true;
-				dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
+				dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
 			}
 		},
 
