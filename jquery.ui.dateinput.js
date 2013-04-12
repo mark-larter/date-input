@@ -71,7 +71,11 @@
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
                     showDeselectButton: hasButtons && !options.isRequired,
-                    onClose: function (date, inst) {
+					onSelect: function(date, inst) {
+                        var jqInst = $(this);
+                        jqInst.dateInput("setDate", date);
+					}
+                    onClose: function(date, inst) {
                         var jqInst = $(this);
                         jqInst.dateInput("setDate", date);
                         if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
