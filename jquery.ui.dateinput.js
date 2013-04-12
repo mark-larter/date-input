@@ -27,7 +27,7 @@
             showMessage: true,
             errorClass: "errorInput",
             dateDisplayFormat: "mm/dd/yy",
-			fullDisplayFormat = "D M dd, yy",
+			fullDisplayFormat: "D M dd, yy",
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -192,10 +192,6 @@
         clearDate: function() {
             this._clearDate();
         },
-        
-        getDateValue: function() {
-            return this._dateValue;
-        },
 		
 		addDays: function(days) {
 			var intDays = parseInt(days, 10);
@@ -206,6 +202,10 @@
 				this.txtDate.datepicker("setDate", adjustment);
 			}
 		},
+        
+        getDateValue: function() {
+            return this._dateValue;
+        },
 
         setEnabled: function(isEnabled) {
             var hasTime = this.options.hasTime;
