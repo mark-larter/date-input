@@ -28,6 +28,8 @@
             errorClass: "errorInput",
             dateDisplayFormat: "mm/dd/yy",
 			fullDisplayFormat: "D M dd, yy",
+			minDate: "01/01/1753",
+			maxDate: "12/31/9999",
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -67,6 +69,8 @@
                 $element.datepicker({
 					changeMonth: true,
 					changeYear: true,
+					minDate: options.minDate,
+					maxDate: options.maxDate,
 					dateFormat: options.dateDisplayFormat,
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
