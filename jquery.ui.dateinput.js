@@ -190,9 +190,10 @@
 			
 			// Leverage datepicker smarts.
 			if (hasPicker) { 
-				dateValue.date = $element.datepicker('getDate'); 
+				var newDate = $element.datepicker('getDate');
+				dateValue.date = newDate;
                 dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
-                dateValue.isValid = !isNaN(dateValue.date);
+                dateValue.isValid = !isNaN(newDate);
 			}
            
             return this;
