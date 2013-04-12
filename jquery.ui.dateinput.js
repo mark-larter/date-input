@@ -28,6 +28,8 @@
             errorClass: "errorInput",
             dateDisplayFormat: "mm/dd/yy",
 			fullDisplayFormat: "D M dd, yy",
+			minYear: "1900",
+			maxYear: "2020",
 			minDate: "01/01/1753",
 			maxDate: "12/31/9999",
             hasPicker: true,
@@ -69,6 +71,7 @@
                 $element.datepicker({
 					changeMonth: true,
 					changeYear: true,
+					yearRange: options.minYear + ":" + options.maxYear,
 					minDate: options.minDate,
 					maxDate: options.maxDate,
 					dateFormat: options.dateDisplayFormat,
