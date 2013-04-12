@@ -26,7 +26,8 @@
         defaults = {
             showMessage: true,
             errorClass: "errorInput",
-            dateDelimiter: "/",
+            dateDisplayFormat: "mm/dd/yy",
+			fullDisplayFormat = "D M dd, yy",
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -45,14 +46,6 @@
         
         this._defaults = defaults;
         this._name = pluginName;
-        
-        // Test for the presence of the Microsoft Ajax library. This is necessary due to conflicting Date.format implementations between
-        // the Microsoft Ajax library and the sugarjs library. This must wait until the constructor, rather than in global plugin definition,
-        // because the plugin instance's environment is what must be tested.
-        var isMsAjax = (typeof Sys !== "undefined");
-
-        this._dateDisplayFormat = isMsAjax ? "yyyy/MM/dd" : "{yyyy}/{MM}/{dd}";
-        this._fullDisplayFormat = isMsAjax ? "W MMM dd, yyyy" : "{Weekday} {Month} {ord}, {year}";
         
 		this._dateRegex = dateRegex;
     
@@ -74,7 +67,7 @@
                 $element.datepicker({
 					changeMonth: true,
 					changeYear: true,
-					dateFormat: "mm/dd/yy",
+					dateFormat: options.dateDisplayFormat,
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
                     showDeselectButton: hasButtons && !options.isRequired,
@@ -135,18 +128,6 @@
             }
         },
 
-        _formatValidDate: function(dateValue) {
-            // Check for valid date.
-            if (dateValue && dateValue.isValid) {
-                // Format date. Zero pad months and days. Concatenate date parts with delimiter.
-                var dateDelimiter = this.options.dateDelimiter;
-                if (dateValue.hours.length == 1) { dateValue.hours = "0" + dateValue.hours; }
-                timeValue.time = timeValue.hours + dateDelimiter + timeValue.minutes
-                if (timeValue.seconds) { timeValue.time = timeValue.time + dateDelimiter + timeValue.seconds; }
-                timeValue.message = timeValue.time;
-            }
-        },
-
         _validateDate: function(dateString) {
             var dateValue = {
                 isValid: false,
@@ -177,7 +158,7 @@
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = $.datepicker.formatDate(newDate, this._fullDisplayFormat);
+                    dateValue.message = $.datepicker.formatDate(newDate, options.fullDisplayFormat);
                 }
             }
 
@@ -190,7 +171,8 @@
         setDate: function(dateToSet) {
             this._dateValue = this._validateDate(dateToSet);
 
-            var hasPicker = this.options.hasPicker;
+            var options = this.options;
+            var hasPicker = options.hasPicker;
             var $element = $(this.element);
             if (dateToSet == null || dateToSet === "") {
                 if (hasPicker) { $element.datepicker('setDate', ""); }
@@ -200,7 +182,7 @@
                 var dateValue = this._dateValue;
                 if (dateValue.isValid) {
                     if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val($.datepicker.formatDate(dateValue.date, this._dateDisplayFormat)); }
+                    else { $element.val($.datepicker.formatDate(dateValue.date, options.dateDisplayFormat)); }
                 }
             }
            
