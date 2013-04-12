@@ -75,7 +75,6 @@
                         var jqInst = $(this);
                         jqInst.dateInput("setDate", date);
                         if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
-						return true;
                     }
                 });
             }
@@ -114,20 +113,15 @@
             };
         },
 
-        _showFeedback: function(dateValue) {
-            var $element = $(this.element);
-            if ($element && dateValue) {
-                var options = this.options;
-                if (dateValue.isValid) {
-                    $element.removeClass("errorInput");
-                    if (options.showMessage) { $element.attr('title', ""); }
-                }
-                else {
-                    $element.addClass("errorInput");
-                    if (options.showMessage) { $element.attr('title', dateValue.message); }
-                }
-            }
-        },
+		_showFeedback: function(dateValue) {
+			var $element = $(this.element);
+			if ($element && dateValue) {
+				var options = this.options;
+				if (options.showMessage) { $element.attr('title', dateValue.message); }
+				if (dateValue.isValid) { $element.removeClass("errorInput"); }
+				else { $element.addClass("errorInput"); }
+			}
+		},
 
         _validateDate: function(dateString) {
             var dateValue = {
