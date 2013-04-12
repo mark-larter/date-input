@@ -29,7 +29,7 @@
             dateDisplayFormat: "mm/dd/yy",
 			fullDisplayFormat: "D M dd, yy",
 			minYear: "1900",
-			maxYear: "2020",
+			maxYear: "2050",
 			minDate: "01/01/1753",
 			maxDate: "12/31/9999",
             hasPicker: true,
@@ -187,6 +187,9 @@
                     else { $element.val($.datepicker.formatDate(options.dateDisplayFormat, dateValue.date)); }
                 }
             }
+			
+			// Leverage datepicker smarts.
+			if (hasPicker) { this._dateValue.date = $element.datepicker('getDate'); }
            
             return this;
         },
