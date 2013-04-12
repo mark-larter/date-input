@@ -158,7 +158,7 @@
                 }
                 else { 
                     dateValue.isValid = true;
-                    dateValue.message = $.datepicker.formatDate(newDate, options.fullDisplayFormat);
+                    dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
                 }
             }
 
@@ -182,7 +182,7 @@
                 var dateValue = this._dateValue;
                 if (dateValue.isValid) {
                     if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val($.datepicker.formatDate(dateValue.date, options.dateDisplayFormat)); }
+                    else { $element.val($.datepicker.formatDate(options.dateDisplayFormat, dateValue.date)); }
                 }
             }
            
