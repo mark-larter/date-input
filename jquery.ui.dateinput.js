@@ -165,6 +165,8 @@
 				dateValue.isValid = true;
 				dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
 			}
+			
+			this._dateValue = dateValue;
 		},
 
         setDate: function(dateString) {
