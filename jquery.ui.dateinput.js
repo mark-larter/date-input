@@ -153,31 +153,32 @@
                     dateString = dateString.toString();
                 }
 
-				var newDate = new Date(dateString);
-				dateValue.date = newDate;
-                if (isNaN(newDate)) {
-                    dateValue.message = "Date is invalid";
-                }
-                else { 
-                    dateValue.isValid = true;
-                    dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
-                }
+				 = new Date();
+				this._setDate(newDate);
             }
-
-            // Show feedback.
-            this._showFeedback(dateValue);
 
             return dateValue;
         },
+		
+		_setDate: function(dateString) {
+			var newDate = new Date(dateString);
+            var dateValue = this._dateValue;
+			dateValue.date = newDate;
+			if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
+			else { 
+				dateValue.isValid = true;
+				dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
+			}
+		},
 
-        setDate: function(dateToSet) {
-            this._dateValue = this._validateDate(dateToSet);
+        setDate: function(dateString) {
+            this._dateValue = this._validateDate(dateString);
             var dateValue = this._dateValue;
 
             var options = this.options;
             var hasPicker = options.hasPicker;
             var $element = $(this.element);
-            if (dateToSet == null || dateToSet === "") {
+            if (dateString == null || dateString === "") {
                 if (hasPicker) { $element.datepicker('setDate', ""); }
                 else { $element.val(""); }
             }
@@ -189,12 +190,10 @@
             }
 			
 			// Leverage datepicker smarts.
-			if (hasPicker) { 
-				var newDate = $element.datepicker('getDate');
-				dateValue.date = newDate;
-                dateValue.message = $.datepicker.formatDate(options.fullDisplayFormat, newDate);
-                dateValue.isValid = !isNaN(newDate);
-			}
+			if (hasPicker) { this._setDate($element.datepicker('getDate')); }
+
+            // Show feedback.
+            this._showFeedback(dateValue);
            
             return this;
         },
