@@ -74,7 +74,7 @@
 					onSelect: function(date, inst) {
                         var jqInst = $(this);
                         jqInst.dateInput("setDate", date);
-					}
+					},
                     onClose: function(date, inst) {
                         var jqInst = $(this);
                         jqInst.dateInput("setDate", date);
