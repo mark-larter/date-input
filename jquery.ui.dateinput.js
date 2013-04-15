@@ -128,6 +128,24 @@
 				else { $element.addClass("errorInput"); }
 			}
 		},
+		
+		_setDate: function(dateString) {
+			var newDate = new Date(dateString);
+            var dateValue = this._dateValue;
+			if (!(dateString == null || dateString === ""))
+			{			
+				dateValue.date = newDate;
+				if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
+				else { 
+					dateValue.isValid = true;
+					dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
+				}
+				
+				this._dateValue = dateValue;
+			}
+			
+			return dateValue;
+		},
 
         _validateDate: function(dateString) {
             var dateValue = {
@@ -154,24 +172,6 @@
 
             return dateValue;
         },
-		
-		_setDate: function(dateString) {
-			var newDate = new Date(dateString);
-            var dateValue = this._dateValue;
-			if (!(dateString == null || dateString === ""))
-			{			
-				dateValue.date = newDate;
-				if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
-				else { 
-					dateValue.isValid = true;
-					dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
-				}
-				
-				this._dateValue = dateValue;
-			}
-			
-			return dateValue;
-		},
 
         setDate: function(dateString) {
             this._dateValue = this._validateDate(dateString);
