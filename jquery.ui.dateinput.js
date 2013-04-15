@@ -58,12 +58,11 @@
     
     dateInput.prototype = {
         _create: function() {
-            var self = this;
         },
         
         _init: function() {
             this._clearDate();
-            var self = this, $element = $(this.element);
+            var $element = $(this.element);
             var options = this.options;
             var onComplete = options.onComplete;
             if (options.hasPicker) {
@@ -81,7 +80,7 @@
                     onClose: function(date, inst) {
                         var jqInst = $(this);
                         jqInst.dateInput("setDate", date);
-                        if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
+                        if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst._dateValue]); }
                     }
                 });
             }
@@ -89,7 +88,7 @@
                 $element.on('blur', function(event) {
                     var jqInst = $(this);
                     jqInst.dateInput("setDate", jqInst.val());
-                    if (onComplete) { onComplete.apply(jqInst.dateInput, [self._dateValue]); }
+                    if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst._dateValue]); }
                 });
             }
             
