@@ -158,14 +158,18 @@
 		_setDate: function(dateString) {
 			var newDate = new Date(dateString);
             var dateValue = this._dateValue;
-			dateValue.date = newDate;
-			if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
-			else { 
-				dateValue.isValid = true;
-				dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
+			if (!(dateString == null || dateString === ""))
+			{			
+				dateValue.date = newDate;
+				if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
+				else { 
+					dateValue.isValid = true;
+					dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
+				}
+				
+				this._dateValue = dateValue;
 			}
 			
-			this._dateValue = dateValue;
 			return dateValue;
 		},
 
