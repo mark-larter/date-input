@@ -210,7 +210,12 @@
 				var adjustment = days + "d";
 				if (intDays > 0) { adjustment = "+" + adjustment; }
 				adjustment = "c" + adjustment;
-				this.txtDate.datepicker("setDate", adjustment);
+				if (this.options.hasPicker) {
+					var $element = $(this.element);
+					$element.datepicker('setDate', adjustment);
+					this._dateValue = this._setDate($element.datepicker('getDate'));
+					this._showFeedback(this._dateValue);
+				}
 			}
 		},
         
