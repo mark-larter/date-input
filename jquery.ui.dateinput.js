@@ -28,6 +28,7 @@
             errorClass: "errorInput",
             dateDisplayFormat: "mm/dd/yy",
 			fullDisplayFormat: "D M dd, yy",
+			shortYearCutoff: "+20",
 			minYear: "1900",
 			maxYear: "2050",
 			minDate: "01/01/1753",
