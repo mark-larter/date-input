@@ -199,7 +199,7 @@
             }
 			
 			// Leverage datepicker smarts.
-			if (hasPicker) { dateValue = this._setDate($element.datepicker('getDate')); }
+//			if (hasPicker) { dateValue = this._setDate($element.datepicker('getDate')); }
 
             // Show feedback.
             this._showFeedback(dateValue);
