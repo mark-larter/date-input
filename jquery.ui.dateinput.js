@@ -26,13 +26,13 @@
         defaults = {
             showMessage: true,
             errorClass: "errorInput",
-            dateDisplayFormat: "mm/dd/yy",
-			fullDisplayFormat: "D M dd, yy",
+            dateFormat: "mm/dd/yy",
+			messageFormat: "D M dd, yy",
 			shortYearCutoff: "+20",
 			minYear: "1900",
 			maxYear: "2050",
-			minDate: "01/01/12",
-			maxDate: "12/31/14",
+			minDate: "01/01/1753",
+			maxDate: "12/31/9999",
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -74,7 +74,7 @@
 					yearRange: options.minYear + ":" + options.maxYear,
 					minDate: options.minDate,
 					maxDate: options.maxDate,
-					dateFormat: options.dateDisplayFormat,
+					dateFormat: options.dateFormat,
 					shortYearCutoff: options.shortYearCutoff,
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
@@ -133,7 +133,7 @@
 		
 		_parseDate: function(dateString) {
             var options = this.options;
-			return $.datepicker.parseDate(options.dateDisplayFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
+			return $.datepicker.parseDate(options.dateFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
 		},
 		
 		_setDate: function(dateString) {
@@ -145,7 +145,7 @@
 				if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
 				else { 
 					dateValue.isValid = true;
-					dateValue.message = $.datepicker.formatDate(this.options.fullDisplayFormat, newDate);
+					dateValue.message = $.datepicker.formatDate(this.options.messageFormat, newDate);
 				}
 				
 				this._dateValue = dateValue;
@@ -194,7 +194,7 @@
             else {
                 if (dateValue.isValid) {
                     if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val($.datepicker.formatDate(options.dateDisplayFormat, dateValue.date)); }
+                    else { $element.val($.datepicker.formatDate(options.dateFormat, dateValue.date)); }
                 }
             }
 			
