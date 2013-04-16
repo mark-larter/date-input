@@ -26,7 +26,7 @@
         defaults = {
             showMessage: true,
             errorClass: "errorInput",
-            dateDisplayFormat: "mm/dd/yy",
+            dateDisplayFormat: "mm/dd/y",
 			fullDisplayFormat: "D M dd, yy",
 			shortYearCutoff: "+20",
 			minYear: "1900",
