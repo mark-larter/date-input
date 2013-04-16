@@ -225,7 +225,7 @@
 				if (this.options.hasPicker) {
 					var $element = $(this.element);
 					$element.datepicker('setDate', adjustment);
-					this._dateValue = this._setDate($element.datepicker('getDate'));
+					this._dateValue = this._setDate(this._formatDate($element.datepicker('getDate')));
 					this._showFeedback(this._dateValue);
 				}
 			}
