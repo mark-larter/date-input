@@ -136,6 +136,11 @@
 			return $.datepicker.parseDate(options.dateFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
 		},
 		
+		_formatDate: function(date) {
+            var options = this.options;
+			return $.datepicker.formatDate(options.dateFormat, date);
+		},
+		
 		_setDate: function(dateString) {
 			var newDate = this._parseDate(dateString);
             var dateValue = this._dateValue;
@@ -194,12 +199,12 @@
             else {
                 if (dateValue.isValid) {
                     if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val($.datepicker.formatDate(options.dateFormat, dateValue.date)); }
+                    else { $element.val(this._formatDate(dateValue.date)); }
                 }
             }
 			
 			// Leverage datepicker smarts.
-//			if (hasPicker) { dateValue = this._setDate($element.datepicker('getDate')); }
+			if (hasPicker) { dateValue = this._setDate(this._formatDate($element.datepicker('getDate'))); }
 
             // Show feedback.
             this._showFeedback(dateValue);
