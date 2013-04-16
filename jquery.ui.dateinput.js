@@ -137,7 +137,7 @@
 		},
 		
 		_setDate: function(dateString) {
-			var newDate = _parseDate(dateString);
+			var newDate = this._parseDate(dateString);
             var dateValue = this._dateValue;
 			if (!(dateString == null || dateString === ""))
 			{			
