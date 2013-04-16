@@ -26,7 +26,7 @@
         defaults = {
             showMessage: true,
             errorClass: "errorInput",
-            dateDisplayFormat: "mm/dd/y",
+            dateDisplayFormat: "mm/dd/yy",
 			fullDisplayFormat: "D M dd, yy",
 			shortYearCutoff: "+20",
 			minYear: "1900",
@@ -112,15 +112,6 @@
             return this;
 		},
 
-        _clearDate: function() {
-            this._dateValue = {
-                isValid: false,
-                message: null,
-                date: null,
-                timeValue: null
-            };
-        },
-
 		_showFeedback: function(dateValue) {
 			var $element = $(this.element);
 			if ($element && dateValue) {
@@ -130,9 +121,23 @@
 				else { $element.addClass("errorInput"); }
 			}
 		},
+
+        _clearDate: function() {
+            this._dateValue = {
+                isValid: false,
+                message: null,
+                date: null,
+                timeValue: null
+            };
+        },
+		
+		_parseDate: function(dateString) {
+            var options = this.options;
+			return $.datepicker.parseDate(options.dateDisplayFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
+		},
 		
 		_setDate: function(dateString) {
-			var newDate = new Date(dateString);
+			var newDate = _parseDate(dateString);
             var dateValue = this._dateValue;
 			if (!(dateString == null || dateString === ""))
 			{			
