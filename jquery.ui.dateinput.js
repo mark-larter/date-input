@@ -235,19 +235,33 @@
             return this._dateValue;
         },
 
-        setEnabled: function(isEnabled) {
-            var hasTime = this.options.hasTime;
-            if (isEnabled) {
-                $(this.txtDate).removeAttr("disabled");
-                if (hasTime)
-                    $(_timeObject).removeAttr("disabled");
-            }
-            else {
-                $(this.txtDate).attr("disabled", "disabled");
-                if (hasTime)
-                    $(_timeObject).attr("disabled", "disabled");
-            }
-        }
+		getDate: function() {
+			return this._dateValue.date;
+		},
+
+		getIsValid: function() {
+			return this._dateValue.isValid;
+		},
+
+		getEnabled: function () {
+			var $element = $(this.element);
+			return (!($element.attr("disabled")))
+		},
+
+		setEnabled: function(isEnabled) {
+			var $element = $(this.element);
+			var hasTime = this.options.hasTime;
+			if (isEnabled) {
+				$element.removeAttr("disabled");
+				if (hasTime)
+					$(_timeObject).removeAttr("disabled");
+			}
+			else {
+				$element.attr("disabled", "disabled");
+				if (hasTime)
+					$(_timeObject).attr("disabled", "disabled");
+			}
+		}
     };
 
 	// Hook up to widget bridge.
