@@ -55,6 +55,14 @@
 		this._dateRegex = dateRegex;
     
         this._init();
+
+		if (this.options.hasTime) {
+			var timeElementId = $(this.element).attr('id') + "_ctrlTime";
+			this.timeElement = $("#" + timeElementId);
+		}
+		else { this.timeElement = null; }
+		
+		return this;
     }
     
     dateInput.prototype = {
@@ -254,12 +262,12 @@
 			if (isEnabled) {
 				$element.removeAttr("disabled");
 				if (hasTime)
-					$(_timeObject).removeAttr("disabled");
+					$(this.timeElement).removeAttr("disabled");
 			}
 			else {
 				$element.attr("disabled", "disabled");
 				if (hasTime)
-					$(_timeObject).attr("disabled", "disabled");
+					$(this.timeElement).attr("disabled", "disabled");
 			}
 		}
     };
