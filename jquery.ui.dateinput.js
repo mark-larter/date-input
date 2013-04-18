@@ -165,7 +165,10 @@
 			if (!(dateString == null || dateString === ""))
 			{			
 				dateValue.date = newDate;
-				if (isNaN(newDate)) { dateValue.message = "Date is invalid"; }
+				if (isNaN(newDate)) { 
+					dateValue.isValid = false;
+					dateValue.message = "Date is invalid"; 
+				}
 				else { 
 					dateValue.isValid = true;
 					dateValue.message = $.datepicker.formatDate(this.options.messageFormat, newDate);
