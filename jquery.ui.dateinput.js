@@ -53,14 +53,14 @@
         this._name = pluginName;
         
 		this._dateRegex = dateRegex;
-    
-        this._init();
 
 		if (this.options.hasTime) {
 			var timeElementId = $(this.element).attr('id') + "_ctrlTime";
-			this.timeElement = $("#" + timeElementId);
+			this._timeElement = $("#" + timeElementId);
 		}
-		else { this.timeElement = null; }
+		else { this._timeElement = null; }
+    
+        this._init();
 		
 		return this;
     }
@@ -137,7 +137,8 @@
                 date: null,
                 timeValue: null
             };
-        },
+			if (this.options.hasTime && this._timeElement) { $(this._timeElement).timeInput('clearTime'); }
+       },
 		
 		_parseDate: function(dateString) {
             var options = this.options;
@@ -238,17 +239,33 @@
 				}
 			}
 		},
-        
-        getDateValue: function() {
-            return this._dateValue;
-        },
+		
+		getDateValue: function() {
+			// Incorporate time if appropriate.
+			var dateValue = this._dateValue;
+			if (dateValue.isValid) {
+				if (this.options.hasTime && this._timeElement) {
+					var timeValue = $(this._timeElement).timeInput('getTimeValue');
+					dateValue.timeValue = timeValue;
+					if (timeValue.isValid) {
+						dateValue.date.setHours(timeValue.hours);
+						dateValue.date.setMinutes(timeValue.minutes);
+						var seconds = timeValue.seconds;
+						if (!seconds && this.options.isEndDate) { seconds = "59"; }
+						if (seconds) { dateValue.date.setSeconds(seconds); }
+					}
+				}
+			}
+
+			return dateValue;
+		},
 
 		getDate: function() {
-			return this._dateValue.date;
+			return this.getDateValue().date;
 		},
 
 		getIsValid: function() {
-			return this._dateValue.isValid;
+			return this.getDateValue().isValid;
 		},
 
 		getEnabled: function () {
@@ -262,12 +279,12 @@
 			if (isEnabled) {
 				$element.removeAttr("disabled");
 				if (hasTime)
-					$(this.timeElement).removeAttr("disabled");
+					$(this._timeElement).removeAttr("disabled");
 			}
 			else {
 				$element.attr("disabled", "disabled");
 				if (hasTime)
-					$(this.timeElement).attr("disabled", "disabled");
+					$(this._timeElement).attr("disabled", "disabled");
 			}
 		}
     };
