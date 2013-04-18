@@ -151,7 +151,7 @@
 				newDate = new Date(NaN);
 			}
 			
-			return 
+			return newDate;
 		},
 		
 		_formatDate: function(date) {
