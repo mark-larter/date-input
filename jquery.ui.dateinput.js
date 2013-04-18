@@ -216,7 +216,7 @@
             }
             else {
                 if (dateValue.isValid) {
-                    if (hasPicker) { $element.datepicker('setDate', dateValue.date); }
+                    if (hasPicker && options.coerceEntry) { $element.datepicker('setDate', dateValue.date); }
                     else { $element.val(this._formatDate(dateValue.date)); }
                 }
             }
