@@ -143,7 +143,15 @@
 		
 		_parseDate: function(dateString) {
             var options = this.options;
-			return $.datepicker.parseDate(options.dateFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
+			var newDate = null;
+			try { 
+				newDate = $.datepicker.parseDate(options.dateFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
+			}
+			catch (ex) {
+				newDate = new Date(NaN);
+			}
+			
+			return 
 		},
 		
 		_formatDate: function(date) {
