@@ -120,13 +120,13 @@
             return this;
 		},
 
-		_showFeedback: function(dateValue) {
+		_showFeedback: function(dateValue, isCoerced) {
 			var $element = $(this.element);
 			if ($element && dateValue) {
 				var options = this.options;
 				if (options.showMessage) { $element.attr('title', dateValue.message); }
-				if (dateValue.isValid) { $element.removeClass("errorInput"); }
-				else { $element.addClass("errorInput"); }
+				if (dateValue.isValid & !isCoerced) { $element.removeClass(options.errorClass); }
+				else { $element.addClass(options.errorClass); }
 			}
 		},
 
@@ -212,11 +212,18 @@
                 }
             }
 			
-			// Leverage datepicker smarts.
-			if (hasPicker) { dateValue = this._setDate(this._formatDate($element.datepicker('getDate'))); }
+			// Leverage datepicker smarts around coercion of entered date to minDate or maxDate if out of range.
+			var isCoerced = false;
+			if (hasPicker && options.coerceEnteredDate) {
+				coercedDate = $element.datepicker('getDate');
+				if (dateValue.date != coercedDate) {
+					isCoerced = true;
+					dateValue = this._setDate(this._formatDate(coercedDate)); 
+				}
+			}
 
             // Show feedback.
-            this._showFeedback(dateValue);
+            this._showFeedback(dateValue, isCoerced);
            
             return this;
         },
