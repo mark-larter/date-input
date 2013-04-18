@@ -33,6 +33,7 @@
 			maxYear: "2050",
 			minDate: "01/01/1753",
 			maxDate: "12/31/9999",
+			coerceEntry: true,
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -214,7 +215,7 @@
 			
 			// Leverage datepicker smarts around coercion of entered date to minDate or maxDate if out of range.
 			var isCoerced = false;
-			if (hasPicker && options.coerceEnteredDate) {
+			if (hasPicker && options.coerceEntry) {
 				coercedDate = $element.datepicker('getDate');
 				if (dateValue.date != coercedDate) {
 					isCoerced = true;
