@@ -251,7 +251,6 @@
 						dateValue.date.setHours(timeValue.hours);
 						dateValue.date.setMinutes(timeValue.minutes);
 						var seconds = timeValue.seconds;
-						if (!seconds && this.options.isEndDate) { seconds = "59"; }
 						if (seconds) { dateValue.date.setSeconds(seconds); }
 					}
 				}
