@@ -98,9 +98,9 @@
  
 			$element.on('blur', function(event) {
 				var jqInst = $(this);
-				if (!options.hasPicker || !(jqInst.datepicker('widget').is(":visible"))) {
-					jqInst.dateInput('setDate', jqInst.val());
-					var dateValue = jqInst.dateInput('getDateValue');
+				if (!options.hasPicker) {
+					var dateValue = jqInst.dateInput('setDate', jqInst.val());
+					if (dateValue.isValid) { jqInst.val(this.formatDate(dateValue.date)); }
 					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
 				}
 			});
@@ -156,11 +156,6 @@
 			return newDate;
 		},
 		
-		_formatDate: function(date) {
-            var options = this.options;
-			return $.datepicker.formatDate(options.dateFormat, date);
-		},
-		
 		_validateDate: function(dateString) {
 			var options = this.options;
 			var dateValue = {
@@ -214,7 +209,7 @@
             else {
                 if (dateValue.isValid) {
                     if (hasPicker && options.coerceEntry) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val(this._formatDate(dateValue.date)); }
+                    else { $element.val(this.formatDate(dateValue.date)); }
                 }
             }
 			
@@ -224,7 +219,7 @@
 				coercedDate = $element.datepicker('getDate');
 				if (dateValue.date != coercedDate) {
 					isCoerced = true;
-					dateValue = this._setDate(this._formatDate(coercedDate)); 
+					dateValue = this._setDate(this.formatDate(coercedDate)); 
 				}
 			}
 			*/
@@ -243,7 +238,7 @@
 		
 		getDateValue: function() {
 			// Incorporate time if appropriate.
-			var dateValue = this._validateDate(this._formatDate(this._dateValue.date));
+			var dateValue = this._validateDate(this.formatDate(this._dateValue.date));
 			if (dateValue.isValid) {
 				if (this.options.hasTime && this._timeElement) {
 					var timeValue = $(this._timeElement).timeInput('getTimeValue');
@@ -297,12 +292,17 @@
 				if (this.options.hasPicker) {
 					var $element = $(this.element);
 					$element.datepicker('setDate', adjustment);
-					this._dateValue = this._setDate(this._formatDate($element.datepicker('getDate')));
+					this._dateValue = this._setDate(this.formatDate($element.datepicker('getDate')));
 					this._showFeedback(this._dateValue);
 				}
 			}
+		},
+ 		
+		formatDate: function(date) {
+            var options = this.options;
+			return $.datepicker.formatDate(options.dateFormat, date);
 		}
-    };
+   };
 
 	// Hook up to widget bridge.
 	$.widget.bridge("dateInput", dateInput);
