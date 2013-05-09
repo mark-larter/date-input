@@ -160,7 +160,7 @@
 			return $.datepicker.formatDate(options.dateFormat, date);
 		},
 		
-		validateDate: function(dateString) {
+		_validateDate: function(dateString) {
 			var options = this.options;
 			var dateValue = {
 				isValid: false,
