@@ -234,9 +234,11 @@
             return dateValue;
         },
 
-        clearDate: function() {
-            this._clearDate();
-        },
+		clearDate: function() {
+			this._clearDate();
+			var dateValue = this._dateValue;
+			$(this.element).datepicker('setDate', null);
+		},
 		
 		getDateValue: function() {
 			// Incorporate time if appropriate.
