@@ -239,7 +239,7 @@
 		
 		getDateValue: function() {
 			// Incorporate time if appropriate.
-			var dateValue = this.validateDate(this._formatDate(this._dateValue.date));
+			var dateValue = this._validateDate(this._formatDate(this._dateValue.date));
 			if (dateValue.isValid) {
 				if (this.options.hasTime && this._timeElement) {
 					var timeValue = $(this._timeElement).timeInput('getTimeValue');
