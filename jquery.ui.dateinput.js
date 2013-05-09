@@ -33,7 +33,6 @@
 			maxYear: "2050",
 			minDate: "01/01/1753",
 			maxDate: "12/31/9999",
-			coerceEntry: true,
             hasPicker: true,
             hasButtons: false,
             isDateRequired: false,
@@ -78,6 +77,7 @@
             if (options.hasPicker) {
                 var hasButtons = options.hasButtons;
                 $element.datepicker({
+					defaultDate: $element.val(),
 					changeMonth: true,
 					changeYear: true,
 					yearRange: options.minYear + ":" + options.maxYear,
@@ -87,21 +87,22 @@
 					shortYearCutoff: options.shortYearCutoff,
                     showCloseButton: hasButtons,
                     showNowButton: hasButtons,
-                    showDeselectButton: hasButtons && !options.isRequired,
-                    onClose: function(date, inst) {
-                        var jqInst = $(this);
-                        jqInst.dateInput("setDate", date);
-                        if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst._dateValue]); }
+                    showDeselectButton: hasButtons && !options.isDateRequired,
+					onClose: function(dateString, inst) {
+						var jqInst = $(this);
+						jqInst.dateInput('setDate', dateString);
+						if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
                     }
                 });
             }
-            else {
-                $element.on('blur', function(event) {
-                    var jqInst = $(this);
-                    jqInst.dateInput("setDate", jqInst.val());
-                    if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst._dateValue]); }
-                });
-            }
+ 
+			$element.on('blur', function(event) {
+				var jqInst = $(this);
+				if (!options.hasPicker || !(jqInst.datepicker('widget').is(":visible"))) {
+					jqInst.dateInput('setDate', jqInst.val());
+					if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
+				}
+			});
             
             var initialValue = $element.val();
             if (initialValue && initialValue !== "") { this.setDate(initialValue); }
@@ -121,12 +122,12 @@
             return this;
 		},
 
-		_showFeedback: function(dateValue, isCoerced) {
+		_showFeedback: function(dateValue) {
 			var $element = $(this.element);
 			if ($element && dateValue) {
 				var options = this.options;
 				if (options.showMessage) { $element.attr('title', dateValue.message); }
-				if (dateValue.isValid & !isCoerced) { $element.removeClass(options.errorClass); }
+				if (dateValue.isValid) { $element.removeClass(options.errorClass); }
 				else { $element.addClass(options.errorClass); }
 			}
 		},
@@ -159,52 +160,42 @@
 			return $.datepicker.formatDate(options.dateFormat, date);
 		},
 		
-		_setDate: function(dateString) {
-			var newDate = this._parseDate(dateString);
-            var dateValue = this._dateValue;
-			if (!(dateString == null || dateString === ""))
-			{			
-				dateValue.date = newDate;
-				if (isNaN(newDate)) { 
-					dateValue.isValid = false;
-					dateValue.message = "Date is invalid"; 
+		validateDate: function(dateString) {
+			var options = this.options;
+			var dateValue = {
+				isValid: false,
+				message: null,
+				dateInput: null,
+				date: null,
+				timeValue: null
+			};
+
+			if (options.isDateRequired && (dateString == null || dateString === "")) {
+				dateValue.message = "Date is required";
+			}
+			else if (dateString == null || dateString === "") {
+				dateValue.isValid = true;
+				dateValue.message = "Date is empty";                   
+			}
+			else {
+				if (typeof dateString !== "string") { dateString = dateString.toString(); }
+				var newDate = this._parseDate(dateString);
+				if (!(dateString == null || dateString === ""))
+				{			
+					dateValue.date = newDate;
+					if (isNaN(newDate)) { 
+						dateValue.isValid = false;
+						dateValue.message = "Date is invalid"; 
+					}
+					else { 
+						dateValue.isValid = true;
+						dateValue.message = $.datepicker.formatDate(this.options.messageFormat, newDate);
+					}
 				}
-				else { 
-					dateValue.isValid = true;
-					dateValue.message = $.datepicker.formatDate(this.options.messageFormat, newDate);
-				}
-				
-				this._dateValue = dateValue;
 			}
 			
 			return dateValue;
 		},
-
-        _validateDate: function(dateString) {
-            var dateValue = {
-                isValid: false,
-                message: null,
-                dateInput: null,
-                date: null,
-                timeValue: null
-            };
-
-            var options = this.options;
-            if (options.isRequired && (dateString == null || dateString === "")) {
-                dateValue.message = "Date is required";
-            }
-            else if (dateString == null || dateString === "") {
-                dateValue.isValid = true;
-                dateValue.message = "Date is empty";                   
-            }
-            else {
-                // Now do actual date validation.
-                if (typeof dateString !== "string") { dateString = dateString.toString(); }
-				dateValue = this._setDate(dateString);
-            }
-
-            return dateValue;
-        },
 
         setDate: function(dateString) {
             this._dateValue = this._validateDate(dateString);
@@ -213,6 +204,7 @@
             var options = this.options;
             var hasPicker = options.hasPicker;
             var $element = $(this.element);
+			/*
             if (dateString == null || dateString === "") {
                 if (hasPicker) { $element.datepicker('setDate', ""); }
                 else { $element.val(""); }
@@ -233,35 +225,21 @@
 					dateValue = this._setDate(this._formatDate(coercedDate)); 
 				}
 			}
-
+			*/
+			
             // Show feedback.
-            this._showFeedback(dateValue, isCoerced);
+            this._showFeedback(dateValue);
            
-            return this;
+            return dateValue;
         },
 
         clearDate: function() {
             this._clearDate();
         },
 		
-		addDays: function(days) {
-			var intDays = parseInt(days, 10);
-			if (intDays != NaN) {
-				var adjustment = days + "d";
-				if (intDays > 0) { adjustment = "+" + adjustment; }
-				adjustment = "c" + adjustment;
-				if (this.options.hasPicker) {
-					var $element = $(this.element);
-					$element.datepicker('setDate', adjustment);
-					this._dateValue = this._setDate(this._formatDate($element.datepicker('getDate')));
-					this._showFeedback(this._dateValue);
-				}
-			}
-		},
-		
 		getDateValue: function() {
 			// Incorporate time if appropriate.
-			var dateValue = this._dateValue;
+			var dateValue = this.validateDate(this._formatDate(this._dateValue.date));
 			if (dateValue.isValid) {
 				if (this.options.hasTime && this._timeElement) {
 					var timeValue = $(this._timeElement).timeInput('getTimeValue');
@@ -303,6 +281,21 @@
 				$element.attr("disabled", "disabled");
 				if (hasTime)
 					$(this._timeElement).attr("disabled", "disabled");
+			}
+		},
+		
+		addDays: function(days) {
+			var intDays = parseInt(days, 10);
+			if (intDays != NaN) {
+				var adjustment = days + "d";
+				if (intDays > 0) { adjustment = "+" + adjustment; }
+				adjustment = "c" + adjustment;
+				if (this.options.hasPicker) {
+					var $element = $(this.element);
+					$element.datepicker('setDate', adjustment);
+					this._dateValue = this._setDate(this._formatDate($element.datepicker('getDate')));
+					this._showFeedback(this._dateValue);
+				}
 			}
 		}
     };
