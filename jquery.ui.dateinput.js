@@ -188,8 +188,9 @@
 						dateValue.message = "Date is invalid"; 
 					}
 					else { 
-						dateValue.isValid = true;
-						dateValue.message = $.datepicker.formatDate(this.options.messageFormat, newDate);
+						dateValue.isValid = (newDate >= this._parseDate(options.minDate) && newDate <= this._parseDate(options.maxDate));
+						if (dateValue.isValid) { dateValue.message = $.datepicker.formatDate(options.messageFormat, newDate); }
+						else { dateValue.message = "Date must be between " + options.minDate + " and " + options.maxDate; }
 					}
 				}
 			}
