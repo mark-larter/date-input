@@ -100,7 +100,8 @@
 				var jqInst = $(this);
 				if (!options.hasPicker || !(jqInst.datepicker('widget').is(":visible"))) {
 					jqInst.dateInput('setDate', jqInst.val());
-					if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
+					var dateValue = jqInst.dateInput('getDateValue');
+					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
 				}
 			});
             
