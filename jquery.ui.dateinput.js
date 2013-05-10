@@ -117,7 +117,7 @@
             }
             else {
 				if (typeof key !== "string") { key = key.toString(); }
-				if (key === "minDate" or key === "maxDate") {
+				if (key === "minDate" || key === "maxDate") {
 					if (typeof value !== "string") { value = this.formatDate(value); }
 				}
 			
