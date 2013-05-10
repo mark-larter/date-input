@@ -92,14 +92,14 @@
 					onClose: function(dateString, inst) {
 						var jqInst = $(this);
 						jqInst.dateInput('setDate', dateString);
-						if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
+						//if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
                     }
                 });
             }
  
 			$element.on('blur', function(event) {
 				var jqInst = $(this);
-				if (!options.hasPicker) {
+				if (!options.hasPicker || !(jqInst.datepicker('widget').is(":focus"))) {
 					var dateValue = jqInst.dateInput('setDate', jqInst.val());
 					if (dateValue.isValid) { jqInst.val(jqInst.dateInput('formatDate', dateValue.date)); }
 					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
