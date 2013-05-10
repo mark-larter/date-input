@@ -104,9 +104,6 @@
 					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
 				}
 			});
-            
-            var initialValue = $element.val();
-            if (initialValue && initialValue !== "") { this.setDate(initialValue); }
         },
     
 		option: function(key, value) {
