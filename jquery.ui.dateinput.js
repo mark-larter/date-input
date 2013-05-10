@@ -72,12 +72,13 @@
         _init: function() {
             this._clearDate();
             var $element = $(this.element);
+			var initialValue = $element.val();
             var options = this.options;
             var onComplete = options.onComplete;
             if (options.hasPicker) {
                 var hasButtons = options.hasButtons;
                 $element.datepicker({
-					defaultDate: $element.val(),
+					defaultDate: initialValue,
 					changeMonth: true,
 					changeYear: true,
 					yearRange: options.minYear + ":" + options.maxYear,
@@ -104,6 +105,8 @@
 					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
 				}
 			});
+			
+			if (initialValue && initialValue !== "") { this.setDate(initialValue); }
         },
     
 		option: function(key, value) {
