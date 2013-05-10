@@ -91,7 +91,8 @@
                     showDeselectButton: hasButtons && !options.isDateRequired,
 					onClose: function(dateString, inst) {
 						var jqInst = $(this);
-						jqInst.dateInput('setDate', dateString);
+						var dateValue = jqInst.dateInput('setDate', dateString);
+						if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
                     }
                 });
             }
