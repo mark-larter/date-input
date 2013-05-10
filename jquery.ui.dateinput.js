@@ -119,6 +119,7 @@
 				if (typeof key !== "string") { key = key.toString(); }
 				if (key === "minDate" || key === "maxDate") {
 					if (typeof value !== "string") { value = this.formatDate(value); }
+					if (this.options.hasPicker) { $(this.element).datepicker('option', key, value); }	
 				}
 			
                 this.options[key] = value;
