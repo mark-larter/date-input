@@ -92,7 +92,6 @@
 					onClose: function(dateString, inst) {
 						var jqInst = $(this);
 						jqInst.dateInput('setDate', dateString);
-						//if (onComplete) { onComplete.apply(jqInst.dateInput, [jqInst.dateInput('getDateValue')]); }
                     }
                 });
             }
@@ -201,30 +200,7 @@
             var options = this.options;
             var hasPicker = options.hasPicker;
             var $element = $(this.element);
-			/*
-            if (dateString == null || dateString === "") {
-                if (hasPicker) { $element.datepicker('setDate', ""); }
-                else { $element.val(""); }
-            }
-            else {
-                if (dateValue.isValid) {
-                    if (hasPicker && options.coerceEntry) { $element.datepicker('setDate', dateValue.date); }
-                    else { $element.val(this.formatDate(dateValue.date)); }
-                }
-            }
 			
-			// Leverage datepicker smarts around coercion of entered date to minDate or maxDate if out of range.
-			var isCoerced = false;
-			if (hasPicker && options.coerceEntry) {
-				coercedDate = $element.datepicker('getDate');
-				if (dateValue.date != coercedDate) {
-					isCoerced = true;
-					dateValue = this._setDate(this.formatDate(coercedDate)); 
-				}
-			}
-			*/
-			
-            // Show feedback.
             this._showFeedback(dateValue);
            
             return dateValue;
