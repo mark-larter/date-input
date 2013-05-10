@@ -185,7 +185,11 @@
 					else { 
 						dateValue.isValid = (newDate >= this._parseDate(options.minDate) && newDate <= this._parseDate(options.maxDate));
 						if (dateValue.isValid) { dateValue.message = $.datepicker.formatDate(options.messageFormat, newDate); }
-						else { dateValue.message = "Date must be between " + options.minDate + " and " + options.maxDate; }
+						else {
+							if (maxDate == defaults.maxDate) { dateValue.message = "Date must not be earlier than " + minDate; }
+							else if (minDate == defaults.minDate) { dateValue.message = "Date must not be later than " + maxDate; }
+							else { dateValue.message = "Date must be between " + minDate + " and " + maxDate; }
+						}
 					}
 				}
 			}
@@ -269,7 +273,6 @@
 					var $element = $(this.element);
 					$element.datepicker('setDate', adjustment);
 					this._dateValue = this._setDate(this.formatDate($element.datepicker('getDate')));
-					this._showFeedback(this._dateValue);
 				}
 			}
 		},
