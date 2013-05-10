@@ -182,8 +182,10 @@
 						dateValue.isValid = false;
 						dateValue.message = "Date is invalid"; 
 					}
-					else { 
-						dateValue.isValid = (newDate >= this._parseDate(options.minDate) && newDate <= this._parseDate(options.maxDate));
+					else {
+						var minDate = options.minDate;
+						var maxDate = options.maxDate;
+						dateValue.isValid = (newDate >= this._parseDate(minDate) && newDate <= this._parseDate(maxDate));
 						if (dateValue.isValid) { dateValue.message = $.datepicker.formatDate(options.messageFormat, newDate); }
 						else {
 							if (maxDate == defaults.maxDate) { dateValue.message = "Date must not be earlier than " + minDate; }
