@@ -116,6 +116,11 @@
                 return this.options[key];
             }
             else {
+				if (typeof key !== "string") { key = key.toString(); }
+				if (key === "minDate" or key === "maxDate") {
+					if (typeof value !== "string") { value = this.formatDate(value); }
+				}
+			
                 this.options[key] = value;
             }
             
@@ -185,8 +190,6 @@
 					else {
 						var minDate = options.minDate;
 						var maxDate = options.maxDate;
-						if (typeof minDate !== "string") { minDate = this.formatDate(minDate); }
-						if (typeof maxDate !== "string") { maxDate = this.formatDate(maxDate); }
 						dateValue.isValid = (newDate >= this._parseDate(minDate) && newDate <= this._parseDate(maxDate));
 						if (dateValue.isValid) { dateValue.message = $.datepicker.formatDate(options.messageFormat, newDate); }
 						else {
