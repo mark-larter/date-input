@@ -107,6 +107,25 @@
 			
 			if (initialValue && initialValue !== "") { this.setDate(initialValue); }
         },
+    
+		option: function(key, value) {
+            if ($.isPlainObject(key)) {
+                this.options = $.extend(true, this.options, key);
+            }
+            else if (key && (typeof value == "undefined")) {
+                return this.options[key];
+            }
+            else {
+				if (typeof key !== "string") { key = key.toString(); }
+				if (key === "minDate" || key === "maxDate") {
+					if (typeof value !== "string") { value = this.formatDate(value); }
+				}
+			
+                this.options[key] = value;
+            }
+            
+            return this;
+		},
 
 		_showFeedback: function(dateValue) {
 			var $element = $(this.element);
@@ -183,26 +202,6 @@
 			}
 			
 			return dateValue;
-		},
-    
-		option: function(key, value) {
-            if ($.isPlainObject(key)) {
-                this.options = $.extend(true, this.options, key);
-            }
-            else if (key && (typeof value == "undefined")) {
-                return this.options[key];
-            }
-            else {
-				if (typeof key !== "string") { key = key.toString(); }
-				if (key === "minDate" || key === "maxDate") {
-					if (typeof value !== "string") { value = this.formatDate(value); }
-					if (this.options.hasPicker) { $(this.element).datepicker('option', key, value); }	
-				}
-			
-                this.options[key] = value;
-            }
-            
-            return this;
 		},
 
         setDate: function(dateString) {
