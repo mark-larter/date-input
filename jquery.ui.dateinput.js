@@ -1,8 +1,8 @@
 ﻿/*!
  * DateInput jquery.ui plugin 
  *  - Date entry with validation, and optional popup datepicker UI. 
- *  - Popup datepicker UI provided by jquery.ui.datepicker.js plugin.
- *  - User input validated by regular expression.
+ *  - Popup datepicker UI provided by jQuery UI DatePicker plugin.
+ *  - User input validated by regular expression. 
  *
  * Author:      @marklarter - Mark Larter
  *
@@ -22,36 +22,37 @@
 // The semicolon before this function invocation protects against concatenated 
 // scripts or other plugins that are not closed properly.
 ;(function($, window, document, undefined) {
-	var pluginName = "dateInput",
-        defaults = {
-            showMessage: true,
-            errorClass: "errorInput",
-            dateFormat: "mm/dd/yy",
+	// Set defaults.
+	var pluginName = "dateInput";
+	var	dateRegex = /^[\s\S]*$/;
+	var	defaults = {
+			showMessage: true,
+			title: "Date",
+			errorClass: "errorInput",
+			dateFormat: "mm/dd/yy",
 			messageFormat: "D M dd, yy",
 			shortYearCutoff: "+20",
 			minYear: "1900",
 			maxYear: "2050",
 			minDate: "01/01/1753",
-			maxDate: "12/31/9999",
-            hasPicker: true,
-            hasButtons: false,
-            isDateRequired: false,
-            hasTime: false,
-            isTimeRequired: false,
-            hasSeconds: false,
-            onComplete: null
-       },
-		//dateRegex = /^((([0]?[1-9]|1[0-2])(:|\.)[0-5][0-9]((:|\.)[0-5][0-9])?( )?(AM|am|aM|Am|PM|pm|pM|Pm))|(([0]?[0-9]|1[0-9]|2[0-3])(:|\.)[0-5][0-9]((:|\.)[0-5][0-9])?))$/;
-		dateRegex = /^[\s\S]*$/;
-    
-    // The plugin constructor.
-    var dateInput = function(options, element) {
-        this.options = $.extend({}, defaults, options || {});
-        this.element = element;
-        
-        this._defaults = defaults;
-        this._name = pluginName;
-        
+			maxDate: "01/01/9999",
+			hasPicker: true,
+			hasButtons: false,
+			isDateRequired: false,
+			isEndDate: false,
+			hasTime: false,
+			isTimeRequired: false,
+			hasSeconds: false
+		};
+	
+	// The plugin constructor.
+	var dateInput = function(options, element) {
+		this.options = $.extend({}, defaults, options || {});
+		this.element = element;
+		
+		this._defaults = defaults;
+		this._name = pluginName;
+
 		this._dateRegex = dateRegex;
 
 		if (this.options.hasTime) {
@@ -59,25 +60,24 @@
 			this._timeElement = $("#" + timeElementId);
 		}
 		else { this._timeElement = null; }
-    
-        this._init();
-		
+	
+		this._init();
+
 		return this;
-    }
-    
-    dateInput.prototype = {
-        _create: function() {
-        },
-        
-        _init: function() {
-            this._clearDate();
-            var $element = $(this.element);
+	}
+	
+	dateInput.prototype = {
+		_create: function() {
+		},
+		
+		_init: function() {
+			this.clearDate();
+			var $element = $(this.element);
 			var initialValue = $element.val();
-            var options = this.options;
-            var onComplete = options.onComplete;
-            if (options.hasPicker) {
-                var hasButtons = options.hasButtons;
-                $element.datepicker({
+			var options = this.options;
+			if (options.hasPicker) {
+				var hasButtons = options.hasButtons;
+				$element.datepicker({
 					defaultDate: initialValue,
 					changeMonth: true,
 					changeYear: true,
@@ -86,71 +86,45 @@
 					maxDate: options.maxDate,
 					dateFormat: options.dateFormat,
 					shortYearCutoff: options.shortYearCutoff,
-                    showCloseButton: hasButtons,
-                    showNowButton: hasButtons,
-                    showDeselectButton: hasButtons && !options.isDateRequired,
+					showCloseButton: hasButtons,
+					showNowButton: hasButtons,
+					showDeselectButton: hasButtons && !options.isDateRequired,
 					onClose: function(dateString, inst) {
 						var jqInst = $(this);
-						var dateValue = jqInst.dateInput('setDate', dateString);
-						if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
-                    }
-                });
-            }
- 
-			$element.on('blur', function(event) {
+						jqInst.dateInput('setDateInternal', dateString);
+					}
+				});
+			}
+
+			$element.on('blur', function() {
 				var jqInst = $(this);
 				if (!options.hasPicker || !(jqInst.datepicker('widget').is(":focus"))) {
-					var dateValue = jqInst.dateInput('setDate', jqInst.val());
+					var dateValue = jqInst.dateInput('setDateInternal', jqInst.val());
 					if (dateValue.isValid) { jqInst.val(jqInst.dateInput('formatDate', dateValue.date)); }
-					if (onComplete) { onComplete.apply(jqInst.dateInput, [dateValue]); }
 				}
 			});
-			
-			if (initialValue && initialValue !== "") { this.setDate(initialValue); }
-        },
-    
-		option: function(key, value) {
-            if ($.isPlainObject(key)) {
-                this.options = $.extend(true, this.options, key);
-            }
-            else if (key && (typeof value == "undefined")) {
-                return this.options[key];
-            }
-            else {
-				if (typeof key !== "string") { key = key.toString(); }
-				if (key === "minDate" || key === "maxDate") {
-					if (typeof value !== "string") { value = this.formatDate(value); }
-					if (this.options.hasPicker) { $(this.element).datepicker('option', key, value); }	
-				}
-			
-                this.options[key] = value;
-            }
-            
-            return this;
+
+			if (initialValue && initialValue !== "") { this.setDateInternal(initialValue); }
 		},
 
 		_showFeedback: function(dateValue) {
 			var $element = $(this.element);
 			if ($element && dateValue) {
 				var options = this.options;
-				if (options.showMessage) { $element.attr('title', dateValue.message); }
-				if (dateValue.isValid) { $element.removeClass(options.errorClass); }
-				else { $element.addClass(options.errorClass); }
+				if (this.getEnabled()) {
+					if (options.showMessage) { $element.attr('title', dateValue.message); }
+					if (dateValue.isValid) { $element.removeClass(options.errorClass); }
+					else { $element.addClass(options.errorClass); }
+				}
+				else {
+					if (options.showMessage) { $element.attr('title', ""); }
+					$element.removeClass(options.errorClass);
+				}
 			}
 		},
-
-        _clearDate: function() {
-            this._dateValue = {
-                isValid: false,
-                message: null,
-                date: null,
-                timeValue: null
-            };
-			if (this.options.hasTime && this._timeElement) { $(this._timeElement).timeInput('clearTime'); }
-       },
 		
 		_parseDate: function(dateString) {
-            var options = this.options;
+			var options = this.options;
 			var newDate = null;
 			try { 
 				newDate = $.datepicker.parseDate(options.dateFormat, dateString, { shortYearCutoff: options.shortYearCutoff });
@@ -173,11 +147,11 @@
 			};
 
 			if (options.isDateRequired && (dateString == null || dateString === "")) {
-				dateValue.message = "Date is required";
+				dateValue.message = options.title + " is required";
 			}
 			else if (dateString == null || dateString === "") {
 				dateValue.isValid = true;
-				dateValue.message = "Date is empty";                   
+				dateValue.message = options.title + " is empty";                   
 			}
 			else {
 				if (typeof dateString !== "string") { dateString = dateString.toString(); }
@@ -187,7 +161,7 @@
 					dateValue.date = newDate;
 					if (isNaN(newDate)) { 
 						dateValue.isValid = false;
-						dateValue.message = "Date is invalid"; 
+						dateValue.message = options.title + " is invalid"; 
 					}
 					else {
 						var minDate = options.minDate;
@@ -195,9 +169,9 @@
 						dateValue.isValid = (newDate >= this._parseDate(minDate) && newDate <= this._parseDate(maxDate));
 						if (dateValue.isValid) { dateValue.message = $.datepicker.formatDate(options.messageFormat, newDate); }
 						else {
-							if (maxDate == defaults.maxDate) { dateValue.message = "Date must not be earlier than " + minDate; }
-							else if (minDate == defaults.minDate) { dateValue.message = "Date must not be later than " + maxDate; }
-							else { dateValue.message = "Date must be between " + minDate + " and " + maxDate; }
+							if (maxDate == defaults.maxDate) { dateValue.message = options.title + " must not be earlier than " + minDate; }
+							else if (minDate == defaults.minDate) { dateValue.message = options.title + " must not be later than " + maxDate; }
+							else { dateValue.message = options.title + " must be between " + minDate + " and " + maxDate; }
 						}
 					}
 				}
@@ -205,31 +179,97 @@
 			
 			return dateValue;
 		},
-
-        setDate: function(dateString) {
-            this._dateValue = this._validateDate(dateString);
-            var dateValue = this._dateValue;
-
-            var options = this.options;
-            var hasPicker = options.hasPicker;
-            var $element = $(this.element);
+	
+		option: function(key, value) {
+			if ($.isPlainObject(key)) {
+				this.options = $.extend(true, this.options, key);
+			}
+			else if (key && (typeof value == "undefined")) {
+				return this.options[key];
+			}
+			else {
+				if (typeof key !== "string") { key = key.toString(); }
+				if (key === "minDate" || key === "maxDate") {
+					if (typeof value !== "string") { value = this.formatDate(value); }
+					if (!value || value === "") {
+						if (key === "minDate") { value = defaults.minDate; }
+						else if (key === "maxDate") { value = defaults.maxDate; }
+					}	
+					if (this.options.hasPicker) {
+						$element = $(this.element);
+						var dateActive = $element.datepicker('getDate');
+						$element.dateInput('clearDate');
+						$element.datepicker('option', key, value);
+						$element.dateInput('setDateInternal', dateActive);
+						$element.val(this.formatDate(dateActive));
+					}
+				}
 			
-            this._showFeedback(dateValue);
-           
-            return dateValue;
-        },
+				this.options[key] = value;
+			}
+			
+			return this;
+		},
+
+		setDateInternal: function(dateString) {
+			if (typeof dateString !== "string") { dateString = this.formatDate(dateString); }
+			this._dateValue = this._validateDate(dateString);
+			var dateValue = this._dateValue;
+
+			this._showFeedback(dateValue);
+		   
+			return dateValue;
+		},
+
+		setDate: function(dateInput) {
+			var options = this.options;
+			var hasPicker = options.hasPicker;
+			var $element = $(this.element);
+			var dateString = (typeof dateInput !== "string") ? this.formatDate(dateInput) : dateInput;
+			if (dateString && dateString !== "") { 
+				if (hasPicker) { $element.datepicker('setDate', dateString); }
+				else { $element.val(dateString); }
+				this.setDateInternal(dateString);
+			}
+			if (options.hasTime && this._timeElement) {
+				var newDate = new Date(dateInput);
+				if (!isNaN(newDate)) {
+					var minutes = newDate.getMinutes();
+					var timeString = newDate.getHours() + ":" + ((minutes < 10) ? "0" + minutes : minutes);
+					if (options.hasSeconds) {
+						var seconds = newDate.getSeconds();
+						timeString = timeString + ":" + ((seconds < 10) ? "0" + seconds : seconds);
+					}
+					$(this._timeElement).timeInput('setTime', timeString);
+				}
+			}
+		},
 
 		clearDate: function() {
-			this._clearDate();
-			var dateValue = this._dateValue;
-			$(this.element).datepicker('setDate', null);
+			this._dateValue = {
+				isValid: false,
+				message: null,
+				date: null,
+				timeValue: null
+			};
+
+			var $element = $(this.element);
+			var options = this.options;
+			if (options.hasTime && this._timeElement) { $(this._timeElement).timeInput('clearTime'); }
+			if (options.hasPicker) { 
+				$element.datepicker('setDate', null); 
+				$element.datepicker('option', 'defaultDate', null); 
+			}
+			if (options.showMessage) { $element.attr('title', ""); }
+			$element.removeClass(options.errorClass);
 		},
 		
 		getDateValue: function() {
 			// Incorporate time if appropriate.
+			var options = this.options;
 			var dateValue = this._validateDate(this.formatDate(this._dateValue.date));
 			if (dateValue.isValid) {
-				if (this.options.hasTime && this._timeElement) {
+				if (options.hasTime && this._timeElement) {
 					var timeValue = $(this._timeElement).timeInput('getTimeValue');
 					dateValue.timeValue = timeValue;
 					if (timeValue.isValid) {
@@ -281,16 +321,16 @@
 				if (this.options.hasPicker) {
 					var $element = $(this.element);
 					$element.datepicker('setDate', adjustment);
-					this._dateValue = this._setDate(this.formatDate($element.datepicker('getDate')));
+					this.setDateInternal(this.formatDate($element.datepicker('getDate')));
 				}
 			}
 		},
- 		
+		
 		formatDate: function(date) {
-            var options = this.options;
+			var options = this.options;
 			return $.datepicker.formatDate(options.dateFormat, date);
 		}
-   };
+	};
 
 	// Hook up to widget bridge.
 	$.widget.bridge("dateInput", dateInput);
